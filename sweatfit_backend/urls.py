@@ -24,11 +24,20 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from django.http import HttpResponse
+
+def dummy_ws_handler(request):
+    # This dummy handler catches WebSocket requests from other local projects 
+    # to prevent them from spamming 404s in the SWEAT-2 backend terminal.
+    return HttpResponse("Notifications disabled in this project", status=403)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/cms/', include('cms.urls')),
+    path('ws/notifications/', dummy_ws_handler),
+    path('api/workspace/notifications/', dummy_ws_handler),
 ]
 
 if settings.DEBUG:
